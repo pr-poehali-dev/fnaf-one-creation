@@ -1,8 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Oswald:wght@600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Oswald:wght@600;700&display=swap');
 
 @layer base {
   :root {
@@ -44,6 +44,7 @@
     --sidebar-accent-foreground: 0 0% 90%;
     --sidebar-border: 0 0% 16%;
     --sidebar-ring: 120 100% 25%;
+  }
 
   .dark {
     --background: 0 0% 10%;
@@ -83,28 +84,34 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Roboto Mono', monospace;
+    font-family: "Roboto Mono", monospace;
     overflow: hidden;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Oswald', sans-serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Oswald", sans-serif;
   }
 }
 
 @layer utilities {
   .scanline {
-    background: linear-gradient(
-      transparent 50%,
-      rgba(0, 255, 65, 0.03) 50%
-    );
+    background: linear-gradient(transparent 50%, rgba(0, 255, 65, 0.03) 50%);
     background-size: 100% 4px;
     animation: scanline 8s linear infinite;
   }
 
   @keyframes scanline {
-    0% { background-position: 0 0; }
-    100% { background-position: 0 100%; }
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 100%;
+    }
   }
 
   .flicker {
@@ -112,8 +119,13 @@
   }
 
   @keyframes flicker {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
   }
 
   .glitch {
@@ -121,11 +133,23 @@
   }
 
   @keyframes glitch {
-    0%, 90%, 100% { transform: translate(0); }
-    92% { transform: translate(-2px, 1px); }
-    94% { transform: translate(2px, -1px); }
-    96% { transform: translate(-1px, 2px); }
-    98% { transform: translate(1px, -2px); }
+    0%,
+    90%,
+    100% {
+      transform: translate(0);
+    }
+    92% {
+      transform: translate(-2px, 1px);
+    }
+    94% {
+      transform: translate(2px, -1px);
+    }
+    96% {
+      transform: translate(-1px, 2px);
+    }
+    98% {
+      transform: translate(1px, -2px);
+    }
   }
 
   .static-noise {
