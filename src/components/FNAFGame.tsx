@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import Office from './game/Office';
 import GameUI from './game/GameUI';
 import CameraSystem from './game/CameraSystem';
+import Animatronic from './game/Animatronic';
+import { ShowStage, Hallway, Kitchen, SupplyCloset, Backstage } from './game/Locations';
+import Jumpscare from './game/Jumpscare';
 
 interface GameState {
   power: number;
@@ -16,6 +19,7 @@ interface GameState {
   cameraActive: boolean;
   currentCamera: number;
   gameOver: boolean;
+  jumpscareAnimatronic: 'freddy' | 'bonnie' | 'chica' | 'foxy' | null;
   animatronics: {
     [key: string]: number;
   };
@@ -33,6 +37,7 @@ const FNAFGame = () => {
     cameraActive: false,
     currentCamera: 0,
     gameOver: false,
+    jumpscareAnimatronic: null,
     animatronics: {
       freddy: 0,
       bonnie: 0,
@@ -73,6 +78,38 @@ const FNAFGame = () => {
     return () => clearInterval(timeProgress);
   }, []);
 
+  useEffect(() => {
+    const animatronicMovement = setInterval(() => {
+      setGameState(prev => {
+        const newAnimatronics = { ...prev.animatronics };
+        const difficulty = prev.night;
+        
+        Object.keys(newAnimatronics).forEach(key => {
+          if (Math.random() < 0.1 * difficulty) {
+            newAnimatronics[key] = Math.min(9, newAnimatronics[key] + 1);
+          }
+        });
+
+        if (newAnimatronics.bonnie >= 8 && !prev.leftDoorClosed) {
+          return { ...prev, gameOver: true, jumpscareAnimatronic: 'bonnie' };
+        }
+        if (newAnimatronics.chica >= 8 && !prev.rightDoorClosed) {
+          return { ...prev, gameOver: true, jumpscareAnimatronic: 'chica' };
+        }
+        if (newAnimatronics.freddy >= 9) {
+          return { ...prev, gameOver: true, jumpscareAnimatronic: 'freddy' };
+        }
+        if (newAnimatronics.foxy >= 7 && !prev.leftDoorClosed) {
+          return { ...prev, gameOver: true, jumpscareAnimatronic: 'foxy' };
+        }
+        
+        return { ...prev, animatronics: newAnimatronics };
+      });
+    }, 5000);
+
+    return () => clearInterval(animatronicMovement);
+  }, []);
+
   const toggleLeftDoor = () => {
     setGameState(prev => ({ ...prev, leftDoorClosed: !prev.leftDoorClosed }));
   };
@@ -97,6 +134,37 @@ const FNAFGame = () => {
     setGameState(prev => ({ ...prev, currentCamera: cameraIndex }));
   };
 
+  const handleRestart = () => {
+    setGameState({
+      power: 100,
+      time: 0,
+      night: 1,
+      leftDoorClosed: false,
+      rightDoorClosed: false,
+      leftLightOn: false,
+      rightLightOn: false,
+      cameraActive: false,
+      currentCamera: 0,
+      gameOver: false,
+      jumpscareAnimatronic: null,
+      animatronics: {
+        freddy: 0,
+        bonnie: 0,
+        chica: 0,
+        foxy: 0
+      }
+    });
+  };
+
+  if (gameState.gameOver && gameState.jumpscareAnimatronic) {
+    return (
+      <Jumpscare
+        animatronic={gameState.jumpscareAnimatronic}
+        onRestart={handleRestart}
+      />
+    );
+  }
+
   return (
     <div className="w-full h-screen relative bg-black">
       <Canvas className="w-full h-full">
@@ -109,6 +177,38 @@ const FNAFGame = () => {
           rightDoorClosed={gameState.rightDoorClosed}
           leftLightOn={gameState.leftLightOn}
           rightLightOn={gameState.rightLightOn}
+        />
+        
+        <ShowStage position={[0, 0, -15]} />
+        <Hallway position={[-10, 0, -5]} />
+        <Hallway position={[10, 0, -5]} />
+        <Kitchen position={[15, 0, -15]} />
+        <SupplyCloset position={[-15, 0, -15]} />
+        <Backstage position={[0, 0, -25]} />
+        
+        <Animatronic
+          position={[-2, 0, -14]}
+          color="#8B4513"
+          type="freddy"
+          isActive={gameState.animatronics.freddy === 0}
+        />
+        <Animatronic
+          position={[0, 0, -14]}
+          color="#4169E1"
+          type="bonnie"
+          isActive={gameState.animatronics.bonnie === 0}
+        />
+        <Animatronic
+          position={[2, 0, -14]}
+          color="#FFD700"
+          type="chica"
+          isActive={gameState.animatronics.chica === 0}
+        />
+        <Animatronic
+          position={[-14, 0, -14]}
+          color="#8B0000"
+          type="foxy"
+          isActive={gameState.animatronics.foxy === 0}
         />
         
         <OrbitControls 
